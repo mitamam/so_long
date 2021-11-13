@@ -1,0 +1,4 @@
+# .DS_Store file in the macOS
+*.DS_Store
+# vscode files
+.vscode
