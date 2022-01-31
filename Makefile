@@ -6,7 +6,7 @@
 #    By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/10 20:17:33 by mmasuda           #+#    #+#              #
-#    Updated: 2022/01/31 17:19:13 by mmasuda          ###   ########.fr        #
+#    Updated: 2022/01/31 21:54:50 by mmasuda          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,7 @@ OBJ := $(SRC:.c=.o) $(GNL_SRC:.c=.o)
 all : $(NAME)
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c $^ -I$(INC) -I/usr/include -I$(LIBFT_DIR) -I$(GNL_DIR) -I$(MLX_DIR) -o $@
+	$(CC) $(CFLAGS) -c $< -I$(INC) -I/usr/include -I$(LIBFT_DIR) -I$(GNL_DIR) -I$(MLX_DIR) -o $@
 
 $(NAME) : $(OBJ)
 	$(MAKE) -C $(LIBFT_DIR)

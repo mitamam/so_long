@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 22:23:46 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/01/31 21:25:51 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/01/31 21:59:35 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,9 +254,13 @@ void	create_new_window(t_data *data)
 	int	sizey;
 
 	mlx_get_screen_size(data->mlx, &sizex, &sizey);
-	printf("sizex: %d, sizey: %d\n", sizex, sizey);
 	data->tile_w = sizex / data->x;
 	data->tile_h = sizex / data->y;
+	// ------- delete ------- //
+	printf("sizex: %d, sizey: %d\n", sizex, sizey); 
+	printf("tile_w: %d, tile_h: %d\n", tile_w, tile_h);
+	printf("windowx: %d, windowy: %d\n", (data->tile_w * data->x), (data->tile_h * data->y));
+	// --------- end ---------//
 	data->mlx_win = mlx_new_window(data->mlx, (data->tile_w * data->x), (data->tile_h * data->y), "so_long");
 	if (data->mlx_win == NULL)
 		display_map_error(MLX_ERROR, data);
