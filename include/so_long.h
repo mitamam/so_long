@@ -25,19 +25,15 @@
 # include <get_next_line.h>
 
 # define BUFFER_SIZE 256
+# define KEY_ESC 65307
+# define KEY_W 119
+# define KEY_A 97
+# define KEY_S 115
+# define KEY_D 100
 
 typedef size_t coord;
 
 typedef enum e_bool { false, true } t_bool;
-
-typedef enum e_keys
-{
-	KEY_W,
-	KEY_A,
-	KEY_S,
-	KEY_D,
-	KEY_ESC,
-}			t_keys;
 
 typedef enum e_move
 {

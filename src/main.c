@@ -251,21 +251,20 @@ t_bool is_new_position_off_map_or_wall(int dx, int dy, t_data *data)
 
 	new_x = data->player.x + dx;
 	new_y = data->player.y + dy;
-	if (new_x < 0 || new_y < 0 || new_x > data->x || new_y > data->y ||
-		data->map[new_y][new_x] == '1')
+	if (new_x >= data->x || new_y >= data->y || data->map[new_y][new_x] == '1')
 		return (true);
 	return (false);
 }
 
 void move(t_move move, int dx, int dy, t_data *data)
 {
-	size_t new_x;
-	size_t new_y;
-
 	data->player.move = move;
 	data->pressed_flag = 1;
 	if (is_new_position_off_map_or_wall(dx, dy, data))
 		return ;
+	// ------------ delete ------------ //
+	printf("current_x: %ld current_y: %ld\n", data->player.x, data->player.y);
+	// ------------ end --------------- //
 	data->player.x += dx;
 	data->player.y += dy;
 }
@@ -277,17 +276,17 @@ int	close_window(void *param)
 	exit(0);
 }
 
-int	pressed_key(t_data *data, t_keys key)
+int	pressed_key(int keycode, t_data *data)
 {
-	if (key == KEY_W)
+	if (keycode == KEY_W)
 		move(UP, 0, -1, data);
-	else if (key == KEY_A)
+	else if (keycode == KEY_A)
 		move(LEFT, -1, 0, data);
-	else if (key == KEY_S)
+	else if (keycode == KEY_S)
 		move(DOWN, 0, 1, data);
-	else if (key == KEY_D)
+	else if (keycode == KEY_D)
 		move(RIGHT, 1, 0, data);
-	else if (key == KEY_ESC)
+	else if (keycode == KEY_ESC)
 		exit(0);
 	return (0);
 }
@@ -333,8 +332,8 @@ int	game_loop(t_data *data, t_player *player)
 
 void	create_new_window(t_data *data)
 {
-	size_t	sizex;
-	size_t	sizey;
+	int	sizex;
+	int	sizey;
 	size_t	tile_w;
 	size_t	tile_h;
 
@@ -346,17 +345,13 @@ void	create_new_window(t_data *data)
 	else
 		data->tilesize = tile_h;
 	// ------- delete ------- //
-	printf("sizex: %d, sizey: %d\n", sizex, sizey); 
-	printf("tilesize: %ld", data->tilesize);
-	printf("windowx: %ld, windowy: %ld\n", (data->tilesize * data->x), (data->tilesize * data->y));
+	printf("sizex: %d sizey: %d\n", sizex, sizey); 
+	printf("tilesize: %ld\n", data->tilesize);
+	printf("windowx: %ld windowy: %ld\n", (data->tilesize * data->x), (data->tilesize * data->y));
 	// --------- end ---------//
 	data->mlx_win = mlx_new_window(data->mlx, (data->tilesize * data->x), (data->tilesize * data->y), "so_long");
 	if (data->mlx_win == NULL)
 		display_map_error(MLX_ERROR, data);
-	mlx_hook(data->mlx_win, 2, (1L << 0), &pressed_key, &data);
-	mlx_hook(data->mlx_win, 33, (1L << 17), &close_window, (void *)0);
-	mlx_loop_hook(data->mlx, &game_loop, &data);
-	mlx_loop(data->mlx);
 }
 
 void destroy_and_free_img(t_data *data, t_img *img)
@@ -408,5 +403,10 @@ int	main(int argc, char **argv)
 	while (data.map[i] != NULL)
 		printf("%s\n", data.map[i++]);
 	// ---------- end --------- //
+	mlx_hook(data.mlx_win, 2, (1L << 0), &pressed_key, &data);
+	mlx_hook(data.mlx_win, 33, (1L << 17), &close_window, (void *)0);
+	mlx_loop_hook(data.mlx, &game_loop, &data);
+	mlx_loop(data.mlx);
 	free_data(&data);
+	return (0);
 }
