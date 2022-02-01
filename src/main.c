@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 22:23:46 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/01/31 21:59:35 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/01 16:38:46 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -381,6 +381,45 @@ void	free_data(t_data *data)
 	free(data->mlx);
 }
 
+void draw_tile(t_img *img, size_t x, size_t y, t_data *data)
+{
+	size_t put_x;
+	size_t put_y;
+	
+	put_x = data->tilesize * x;
+	put_y = data->tilesize * y;
+	mlx_put_image_to_window(data->mlx, data->mlx_win, img->img, put_x, put_y);
+}
+
+void draw_map_on_window(t_data *data)
+{
+	size_t	i;
+	size_t	j;
+
+	while (i < data->y)
+	{
+		i = 0;
+		while (j < data->x)
+		{
+			if (data->map[i][j] == '0')
+				draw_tile(&(data->floor), j, i, data);
+			else if (data->map[i][j] == '1')
+				draw_tile(&(data->wall), j, i, data);
+			else if (data->map[i][j] == 'E')
+				draw_tile(&(data->exit), j, i, data);
+			else if (data->map[i][j] == 'C')
+				draw_tile(&(data->item), j, i, data);
+			else if (data->map[i][j] == 'P')
+			{
+				data->player.x = j;
+				data->player.y = i;
+				draw_tile(&(data->player.front), j, i, data);
+			}
+		}
+		i++;
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	t_data	data;
@@ -393,6 +432,7 @@ int	main(int argc, char **argv)
 	check_error_on_map(&data);
 	initialize_mlx(&data);
 	create_new_window(&data);
+	draw_map_on_window(&data);
 	// ------- delete below ------- //
 	printf("y: %ld\n", data.y);
 	printf("x: %ld\n", data.x);
