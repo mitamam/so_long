@@ -62,14 +62,14 @@ typedef enum e_errors
 
 typedef struct s_img
 {
-	void	*img;
-	char	*path;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-	int		width;
-	int		height;
+	void			*img;
+	char			*path;
+	unsigned int	*addr;
+	int				bits_per_pixel;
+	int				line_length;
+	int				endian;
+	int				width;
+	int				height;
 }				t_img;
 
 typedef struct	s_player

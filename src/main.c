@@ -72,6 +72,16 @@ void	count_object(char *buf, t_data *data)
 	}
 }
 
+void draw_tile(t_img *img, size_t x, size_t y, t_data *data)
+{
+	size_t put_x;
+	size_t put_y;
+	
+	put_x = data->tilesize * x;
+	put_y = data->tilesize * y;
+	mlx_put_image_to_window(data->mlx, data->mlx_win, img->img, put_x, put_y);
+}
+
 t_img	initialize_img(t_data *data, char *img_name)
 {
 	t_img	empty_img;
@@ -228,7 +238,7 @@ void load_image_from_xpm_file(t_data *data, t_img *img)
 		printf("%s\n", strerror(errno)); // ------ delete ------ //
 		display_map_error(MLX_ERROR, data);
 	}
-	img->addr = mlx_get_data_addr(img->img, &(img->bits_per_pixel), &(img->line_length), &(img->endian));
+	img->addr = (unsigned int *)mlx_get_data_addr(img->img, &(img->bits_per_pixel), &(img->line_length), &(img->endian));
 }
 
 void	initialize_mlx(t_data *data)
@@ -259,12 +269,13 @@ t_bool is_new_position_off_map_or_wall(int dx, int dy, t_data *data)
 void move(t_move move, int dx, int dy, t_data *data)
 {
 	data->player.move = move;
-	data->pressed_flag = 1;
+	data->pressed_flag = true;
 	if (is_new_position_off_map_or_wall(dx, dy, data))
 		return ;
 	// ------------ delete ------------ //
 	printf("current_x: %ld current_y: %ld\n", data->player.x, data->player.y);
 	// ------------ end --------------- //
+	draw_tile(&(data->floor), data->player.x, data->player.y, data);
 	data->player.x += dx;
 	data->player.y += dy;
 }
@@ -276,49 +287,49 @@ int	close_window(void *param)
 	exit(0);
 }
 
-int	pressed_key(int keycode, t_data *data)
+int	pressed_key(int key_code, t_data *data)
 {
-	if (keycode == KEY_W)
+	if (key_code == KEY_W)
 		move(UP, 0, -1, data);
-	else if (keycode == KEY_A)
+	else if (key_code == KEY_A)
 		move(LEFT, -1, 0, data);
-	else if (keycode == KEY_S)
+	else if (key_code == KEY_S)
 		move(DOWN, 0, 1, data);
-	else if (keycode == KEY_D)
+	else if (key_code == KEY_D)
 		move(RIGHT, 1, 0, data);
-	else if (keycode == KEY_ESC)
+	else if (key_code == KEY_ESC)
 		exit(0);
 	return (0);
 }
 
 void	change_player_img_match_direction(t_player *player, t_data *data)
 {
-	size_t put_x;
-	size_t put_y;
+	size_t current_x;
+	size_t current_y;
 
-	put_x = player->x * data->tilesize;
-	put_y = player->y * data->tilesize;
+	current_x = data->player.x;
+	current_y = data->player.y;
 	if (player->move == UP)
-		mlx_put_image_to_window(data->mlx, data->mlx_win, player->back.img, put_x, put_y);
+		draw_tile(&(data->player.back), current_x, current_y, data);
 	else if (player->move == LEFT)
-		mlx_put_image_to_window(data->mlx, data->mlx_win, player->left.img, put_x, put_y);
+		draw_tile(&(data->player.left), current_x, current_y, data);
 	else if (player->move == DOWN)
-		mlx_put_image_to_window(data->mlx, data->mlx_win, player->front.img, put_x, put_y);
+		draw_tile(&(data->player.front), current_x, current_y, data);
 	else if (player->move == RIGHT)
-		mlx_put_image_to_window(data->mlx, data->mlx_win, player->right.img, put_x, put_y);
+		draw_tile(&(data->player.right), current_x, current_y, data);
 }
 
-int	game_loop(t_data *data, t_player *player)
+int	game_loop(t_data *data)
 {
 	if (data->pressed_flag == true)
 	{
 		change_player_img_match_direction(&(data->player), data);
-		if (data->map[player->y][player->x] == 'C')
+		if (data->map[data->player.y][data->player.x] == 'C')
 		{
 			data->collectibles--;
-			data->map[player->y][player->x] = '0';
+			data->map[data->player.y][data->player.x] = '0';
 		}
-		else if (data->map[player->y][player->x] == 'E')
+		else if (data->map[data->player.y][data->player.x] == 'E')
 		{
 			if (data->collectibles == 0)
 				exit(0);
@@ -354,6 +365,19 @@ void	create_new_window(t_data *data)
 		display_map_error(MLX_ERROR, data);
 }
 
+void	composite_img(t_img *img, t_img *bg, t_data *data)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < (data->tilesize * data->tilesize))
+	{
+		if (img->addr[i] >= 0xFF000000)
+			img->addr[i] = bg->addr[i];
+		i++;
+	}
+}
+
 void destroy_and_free_img(t_data *data, t_img *img)
 {
 	free(img->path);
@@ -381,21 +405,16 @@ void	free_data(t_data *data)
 	free(data->mlx);
 }
 
-void draw_tile(t_img *img, size_t x, size_t y, t_data *data)
-{
-	size_t put_x;
-	size_t put_y;
-	
-	put_x = data->tilesize * x;
-	put_y = data->tilesize * y;
-	mlx_put_image_to_window(data->mlx, data->mlx_win, img->img, put_x, put_y);
-}
-
 void draw_map_on_window(t_data *data)
 {
 	size_t	i;
 	size_t	j;
 
+	composite_img(&(data->player.front), &(data->floor), data);
+	composite_img(&(data->player.back), &(data->floor), data);
+	composite_img(&(data->player.right), &(data->floor), data);
+	composite_img(&(data->player.left), &(data->floor), data);
+	composite_img(&(data->item), &(data->floor), data);
 	i = 0;
 	while (i < data->y)
 	{
