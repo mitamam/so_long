@@ -30,25 +30,22 @@ typedef size_t coord;
 
 typedef enum e_bool { false, true } t_bool;
 
-typedef struct s_img
+typedef enum e_keys
 {
-	void	*img;
-	char	*path;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-	int		width;
-	int		height;
-}				t_img;
+	KEY_W,
+	KEY_A,
+	KEY_S,
+	KEY_D,
+	KEY_ESC,
+}			t_keys;
 
-typedef struct	s_player
+typedef enum e_move
 {
-	struct s_img front;
-	struct s_img back;
-	struct s_img right;
-	struct s_img left;
-}				t_player;
+	UP,
+	LEFT,
+	DOWN,
+	RIGHT,
+}			t_move;
 
 typedef enum e_errors
 {
@@ -67,6 +64,29 @@ typedef enum e_errors
 	INVALID,
 }			t_errors;
 
+typedef struct s_img
+{
+	void	*img;
+	char	*path;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+	int		width;
+	int		height;
+}				t_img;
+
+typedef struct	s_player
+{
+	size_t x;
+	size_t y;
+	enum e_move move;
+	struct s_img front;
+	struct s_img back;
+	struct s_img right;
+	struct s_img left;
+}				t_player;
+
 typedef struct s_data
 {
 	char			*filename;
@@ -75,8 +95,8 @@ typedef struct s_data
 	char			**map;
 	coord			x;
 	coord			y;
-	size_t			tile_w;
-	size_t			tile_h;
+	t_bool			pressed_flag;
+	size_t			tilesize;
 	size_t			steps;
 	size_t			collectibles;
 	size_t			exits;
