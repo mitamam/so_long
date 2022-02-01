@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 22:23:46 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/01 16:38:46 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/01 16:41:56 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -396,9 +396,10 @@ void draw_map_on_window(t_data *data)
 	size_t	i;
 	size_t	j;
 
+	i = 0;
 	while (i < data->y)
 	{
-		i = 0;
+		j = 0;
 		while (j < data->x)
 		{
 			if (data->map[i][j] == '0')
@@ -415,6 +416,7 @@ void draw_map_on_window(t_data *data)
 				data->player.y = i;
 				draw_tile(&(data->player.front), j, i, data);
 			}
+			j++;
 		}
 		i++;
 	}
