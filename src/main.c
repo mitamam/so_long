@@ -12,14 +12,51 @@
 
 # include <so_long.h>
 
+void destroy_and_free_img(t_data *data, t_img *img)
+{
+	if (img->path != NULL)
+		free(img->path);
+	mlx_destroy_image(data->mlx, img);
+	free(img);
+}
+
+void free_all_img(t_data *data)
+{
+	destroy_and_free_img(data, &data->floor);
+	destroy_and_free_img(data, &data->wall);
+	destroy_and_free_img(data, &data->exit);
+	destroy_and_free_img(data, &data->item);
+	destroy_and_free_img(data, &data->player.front);
+	destroy_and_free_img(data, &data->player.back);
+	destroy_and_free_img(data, &data->player.right);
+	destroy_and_free_img(data, &data->player.left);
+}
+
+void	exit_game(t_data *data, int ret)
+{
+	size_t	i;
+
+	i = 0;
+	while (data->map[i] != NULL)
+		free(data->map[i++]);
+	free_all_img(data);
+	if (data->mlx_win != NULL)
+		mlx_destroy_window(data->mlx, data->mlx_win);
+	if (data->mlx != NULL)
+	{
+		mlx_destroy_display(data->mlx);
+		free(data->mlx);
+	}
+	exit(ret);
+}
+
 void	display_error(t_data *data)
 {
 	printf("./so_long: %s: %s\n", data->filename, strerror(errno));
-	// free memory
-	exit(1);
+	exit_game(data, 1);
 }
 
-void	display_map_error(const t_errors error, const t_data *data)
+void	display_map_error(const t_errors error, t_data *data)
 {
 	const char	*error_msgs[INVALID] = {
 		"usage: ./so_long [ .ber mapfile ]",
@@ -41,8 +78,7 @@ void	display_map_error(const t_errors error, const t_data *data)
 		printf("%s\n", error_msgs[error]);
 	else
 		printf("%s: %s\n", data->filename, error_msgs[error]);
-	// free memory
-	exit(1);
+	exit_game(data, 1);
 }
 
 t_bool	is_line_length_same_as_prev_line(const coord line_length, const coord x)
@@ -283,11 +319,10 @@ void move(t_move move, int dx, int dy, t_data *data)
 	data->player.y += dy;
 }
 
-int	close_window(void *param)
+int	close_window(t_data *data)
 {
-	// free
-	(void)param;
-	exit(0);
+	exit_game(data, 0);
+	return (0);
 }
 
 int	pressed_key(int key_code, t_data *data)
@@ -301,7 +336,7 @@ int	pressed_key(int key_code, t_data *data)
 	else if (key_code == KEY_D)
 		move(RIGHT, 1, 0, data);
 	else if (key_code == KEY_ESC)
-		exit(0);
+		exit_game(data, 0);
 	return (0);
 }
 
@@ -338,7 +373,7 @@ int	game_loop(t_data *data)
 		else if (data->map[data->player.y][data->player.x] == 'E')
 		{
 			if (data->collectibles == 0)
-				exit(0);
+				exit_game(data, 0);
 			else
 				printf("\x1b[31myou haven't got all the collectibles!\x1b[39m\n");
 		}
@@ -382,33 +417,6 @@ void	composite_img(t_img *img, t_img *bg)
 			img->addr[i] = bg->addr[i];
 		i++;
 	}
-}
-
-void destroy_and_free_img(t_data *data, t_img *img)
-{
-	free(img->path);
-	mlx_destroy_image(data->mlx, img);
-	free(img);
-}
-
-void	free_data(t_data *data)
-{
-	size_t	i;
-
-	i = 0;
-	while (data->map[i] != NULL)
-		free(data->map[i++]);
-	destroy_and_free_img(data, &data->floor);
-	destroy_and_free_img(data, &data->wall);
-	destroy_and_free_img(data, &data->exit);
-	destroy_and_free_img(data, &data->item);
-	destroy_and_free_img(data, &data->player.front);
-	destroy_and_free_img(data, &data->player.back);
-	destroy_and_free_img(data, &data->player.right);
-	destroy_and_free_img(data, &data->player.left);
-	mlx_destroy_window(data->mlx, data->mlx_win);
-	mlx_destroy_display(data->mlx);
-	free(data->mlx);
 }
 
 void draw_map_on_window(t_data *data)
@@ -472,9 +480,9 @@ int	main(int argc, char **argv)
 		printf("%s\n", data.map[i++]);
 	// ---------- end --------- //
 	mlx_hook(data.mlx_win, 2, (1L << 0), &pressed_key, &data);
-	mlx_hook(data.mlx_win, 33, (1L << 17), &close_window, (void *)0);
+	mlx_hook(data.mlx_win, 33, (1L << 17), &close_window, &data);
 	mlx_loop_hook(data.mlx, &game_loop, &data);
 	mlx_loop(data.mlx);
-	free_data(&data);
+	exit_game(&data, 0);
 	return (0);
 }
