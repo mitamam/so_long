@@ -232,26 +232,26 @@ void	check_error_on_map(t_data *data)
 
 void load_image_from_xpm_file(t_data *data, t_img *img)
 {
-	img->img = mlx_xpm_file_to_image(data->mlx, img->path, &(img->width), &(img->height));
+	img->img = mlx_xpm_file_to_image(data->mlx, img->path, &img->width, &img->height);
 	if (img->img == NULL)
 	{
 		printf("%s\n", strerror(errno)); // ------ delete ------ //
 		display_map_error(MLX_ERROR, data);
 	}
-	img->addr = (unsigned int *)mlx_get_data_addr(img->img, &(img->bits_per_pixel), &(img->line_length), &(img->endian));
+	img->addr = (unsigned int *)mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
 }
 
 void	initialize_mlx(t_data *data)
 {
 	data->mlx = mlx_init();
-	load_image_from_xpm_file(data, &(data->floor));
-	load_image_from_xpm_file(data, &(data->wall));
-	load_image_from_xpm_file(data, &(data->exit));
-	load_image_from_xpm_file(data, &(data->item));
-	load_image_from_xpm_file(data, &(data->player.front));
-	load_image_from_xpm_file(data, &(data->player.back));
-	load_image_from_xpm_file(data, &(data->player.right));
-	load_image_from_xpm_file(data, &(data->player.left));
+	load_image_from_xpm_file(data, &data->floor);
+	load_image_from_xpm_file(data, &data->wall);
+	load_image_from_xpm_file(data, &data->exit);
+	load_image_from_xpm_file(data, &data->item);
+	load_image_from_xpm_file(data, &data->player.front);
+	load_image_from_xpm_file(data, &data->player.back);
+	load_image_from_xpm_file(data, &data->player.right);
+	load_image_from_xpm_file(data, &data->player.left);
 }
 
 t_bool is_new_position_off_map_or_wall(int dx, int dy, t_data *data)
@@ -275,7 +275,10 @@ void move(t_move move, int dx, int dy, t_data *data)
 	// ------------ delete ------------ //
 	printf("current_x: %ld current_y: %ld\n", data->player.x, data->player.y);
 	// ------------ end --------------- //
-	draw_tile(&(data->floor), data->player.x, data->player.y, data);
+	if (data->map[data->player.y][data->player.x] == 'E')
+		draw_tile(&data->exit, data->player.x, data->player.y, data);
+	else
+		draw_tile(&data->floor, data->player.x, data->player.y, data);
 	data->player.x += dx;
 	data->player.y += dy;
 }
@@ -310,23 +313,26 @@ void	change_player_img_match_direction(t_player *player, t_data *data)
 	current_x = data->player.x;
 	current_y = data->player.y;
 	if (player->move == UP)
-		draw_tile(&(data->player.back), current_x, current_y, data);
+		draw_tile(&data->player.back, current_x, current_y, data);
 	else if (player->move == LEFT)
-		draw_tile(&(data->player.left), current_x, current_y, data);
+		draw_tile(&data->player.left, current_x, current_y, data);
 	else if (player->move == DOWN)
-		draw_tile(&(data->player.front), current_x, current_y, data);
+		draw_tile(&data->player.front, current_x, current_y, data);
 	else if (player->move == RIGHT)
-		draw_tile(&(data->player.right), current_x, current_y, data);
+		draw_tile(&data->player.right, current_x, current_y, data);
 }
 
 int	game_loop(t_data *data)
 {
 	if (data->pressed_flag == true)
 	{
-		change_player_img_match_direction(&(data->player), data);
+		change_player_img_match_direction(&data->player, data);
 		if (data->map[data->player.y][data->player.x] == 'C')
 		{
 			data->collectibles--;
+			// ------- delete ------- //
+			printf("collectibles: %ld\n", data->collectibles);
+			// -------- end ------- //
 			data->map[data->player.y][data->player.x] = '0';
 		}
 		else if (data->map[data->player.y][data->player.x] == 'E')
@@ -365,12 +371,12 @@ void	create_new_window(t_data *data)
 		display_map_error(MLX_ERROR, data);
 }
 
-void	composite_img(t_img *img, t_img *bg, t_data *data)
+void	composite_img(t_img *img, t_img *bg)
 {
-	size_t	i;
+	long long i;
 
 	i = 0;
-	while (i < (data->tilesize * data->tilesize))
+	while (i < (img->width * img->height))
 	{
 		if (img->addr[i] >= 0xFF000000)
 			img->addr[i] = bg->addr[i];
@@ -392,14 +398,14 @@ void	free_data(t_data *data)
 	i = 0;
 	while (data->map[i] != NULL)
 		free(data->map[i++]);
-	destroy_and_free_img(data, &(data->floor));
-	destroy_and_free_img(data, &(data->wall));
-	destroy_and_free_img(data, &(data->exit));
-	destroy_and_free_img(data, &(data->item));
-	destroy_and_free_img(data, &(data->player.front));
-	destroy_and_free_img(data, &(data->player.back));
-	destroy_and_free_img(data, &(data->player.right));
-	destroy_and_free_img(data, &(data->player.left));
+	destroy_and_free_img(data, &data->floor);
+	destroy_and_free_img(data, &data->wall);
+	destroy_and_free_img(data, &data->exit);
+	destroy_and_free_img(data, &data->item);
+	destroy_and_free_img(data, &data->player.front);
+	destroy_and_free_img(data, &data->player.back);
+	destroy_and_free_img(data, &data->player.right);
+	destroy_and_free_img(data, &data->player.left);
 	mlx_destroy_window(data->mlx, data->mlx_win);
 	mlx_destroy_display(data->mlx);
 	free(data->mlx);
@@ -410,11 +416,12 @@ void draw_map_on_window(t_data *data)
 	size_t	i;
 	size_t	j;
 
-	composite_img(&(data->player.front), &(data->floor), data);
-	composite_img(&(data->player.back), &(data->floor), data);
-	composite_img(&(data->player.right), &(data->floor), data);
-	composite_img(&(data->player.left), &(data->floor), data);
-	composite_img(&(data->item), &(data->floor), data);
+	composite_img(&data->player.front, &data->floor);
+	composite_img(&data->player.back, &data->floor);
+	composite_img(&data->player.right, &data->floor);
+	composite_img(&data->player.left, &data->floor);
+	composite_img(&data->exit, &data->floor);
+	composite_img(&data->item, &data->floor);
 	i = 0;
 	while (i < data->y)
 	{
@@ -422,18 +429,18 @@ void draw_map_on_window(t_data *data)
 		while (j < data->x)
 		{
 			if (data->map[i][j] == '0')
-				draw_tile(&(data->floor), j, i, data);
+				draw_tile(&data->floor, j, i, data);
 			else if (data->map[i][j] == '1')
-				draw_tile(&(data->wall), j, i, data);
+				draw_tile(&data->wall, j, i, data);
 			else if (data->map[i][j] == 'E')
-				draw_tile(&(data->exit), j, i, data);
+				draw_tile(&data->exit, j, i, data);
 			else if (data->map[i][j] == 'C')
-				draw_tile(&(data->item), j, i, data);
+				draw_tile(&data->item, j, i, data);
 			else if (data->map[i][j] == 'P')
 			{
 				data->player.x = j;
 				data->player.y = i;
-				draw_tile(&(data->player.front), j, i, data);
+				draw_tile(&data->player.front, j, i, data);
 			}
 			j++;
 		}
