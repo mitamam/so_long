@@ -16,8 +16,7 @@ void destroy_and_free_img(t_data *data, t_img *img)
 {
 	if (img->path != NULL)
 		free(img->path);
-	mlx_destroy_image(data->mlx, img);
-	free(img);
+	mlx_destroy_image(data->mlx, img->img_ptr);
 }
 
 void free_all_img(t_data *data)
@@ -37,8 +36,13 @@ void	exit_game(t_data *data, int ret)
 	size_t	i;
 
 	i = 0;
-	while (data->map[i] != NULL)
+	while (i < (data->y + 3))
+		free(data->dfs_map[i++]);
+	free(data->dfs_map);
+	i = 0;
+	while (i < (data->y + 1))
 		free(data->map[i++]);
+	free(data->map);
 	free_all_img(data);
 	if (data->mlx_win != NULL)
 		mlx_destroy_window(data->mlx, data->mlx_win);
@@ -72,7 +76,6 @@ void	display_map_error(const t_errors error, t_data *data)
 		"an error occurred in MiniLibX",
 		"an unknown error has occurred",
 	};
-	
 	printf("Error\n");
 	if (error == INCORRECT_ARG || error >= MALLOC_ERROR)
 		printf("%s\n", error_msgs[error]);
@@ -115,14 +118,14 @@ void draw_tile(t_img *img, size_t x, size_t y, t_data *data)
 	
 	put_x = data->tilesize * x;
 	put_y = data->tilesize * y;
-	mlx_put_image_to_window(data->mlx, data->mlx_win, img->img, put_x, put_y);
+	mlx_put_image_to_window(data->mlx, data->mlx_win, img->img_ptr, put_x, put_y);
 }
 
 t_img	initialize_img(t_data *data, char *img_name)
 {
 	t_img	empty_img;
 
-	empty_img.img = NULL;
+	empty_img.img_ptr = NULL;
 	empty_img.path = ft_strjoin("textures/", img_name);
 	if (empty_img.path == NULL)
 		display_map_error(MALLOC_ERROR, data);
@@ -209,6 +212,7 @@ void	save_map_with_gnl(t_data *data)
 		y++;
 	}
 	data->map[y] = NULL;
+	close(fd);
 }
 
 int	check_rectangular_and_invalid_char(t_data *data)
@@ -244,6 +248,98 @@ t_bool	is_file_extension_incorrect(t_data *data)
 	return (false);
 }
 
+char *ft_strjoinjoin(char const *s1, char const *s2, char const *s3)
+{
+	char	*newstr;
+	size_t	src_len;
+	size_t	i;
+
+	newstr = NULL;
+	src_len = 0;
+	i = 0;
+	if (s1 == NULL || s2 == NULL || s3 == NULL)
+		return (NULL);
+	src_len += ft_strlen(s1);
+	src_len += ft_strlen(s2);
+	src_len += ft_strlen(s3);
+	newstr = (char *)malloc(sizeof(char) * (src_len + 1));
+	if (newstr == NULL)
+		return (NULL);
+	while (*s1 != '\0')
+		newstr[i++] = *s1++;
+	while (*s2 != '\0')
+		newstr[i++] = *s2++;
+	while (*s3 != '\0')
+		newstr[i++] = *s3++;
+	newstr[i] = '\0';
+	return (newstr);
+}
+
+void *ft_memset_with_malloc(int c, size_t n)
+{
+	char *newstr;
+
+	newstr = (char *)malloc(sizeof(char) * (n + 1));
+	if (newstr == NULL)
+		return (NULL);
+	newstr[n] = '\0';
+	return (ft_memset(newstr, c, n));
+}
+
+void	initialize_dfs_map(t_data *data)
+{
+	size_t	i;
+
+	i = 0;
+	data->dfs_map = (char **)malloc(sizeof(char) * data->y + 3);
+	if (data->dfs_map == NULL)
+		display_map_error(MALLOC_ERROR, data);
+	data->dfs_map[0] = ft_memset_with_malloc('!', data->x + 2);
+	data->dfs_map[data->y + 1] = ft_memset_with_malloc('!', data->x + 2);
+	if (data->dfs_map[0] == NULL || data->dfs_map[data->y + 1] == NULL)
+		display_map_error(MALLOC_ERROR, data);
+	while (i < data->y)
+	{
+		data->dfs_map[i + 1] = ft_strjoinjoin("!", data->map[i], "!");
+		if (data->dfs_map[i + 1] == NULL)
+			display_map_error(MALLOC_ERROR, data);
+		i++;
+	}
+	data->dfs_map[i + 2] = NULL;
+}
+
+void dfs(char **dfs_map, size_t x, size_t y, int *check)
+{
+	if (dfs_map[y][x] == '!' || *check == 1)
+	{
+		*check = 1;
+		return ;
+	}
+	dfs_map[y][x] = 'P';
+	if (dfs_map[y + 1][x] != '1' && dfs_map[y + 1][x] != 'P')
+		dfs(dfs_map, x, y + 1, check);
+	if (dfs_map[y - 1][x] != '1' && dfs_map[y - 1][x] != 'P')
+		dfs(dfs_map, x, y - 1, check);
+	if (dfs_map[y][x + 1] != '1' && dfs_map[y][x + 1] != 'P')
+		dfs(dfs_map, x + 1, y, check);
+	if (dfs_map[y][x - 1] != '1' && dfs_map[y][x - 1] != 'P')
+		dfs(dfs_map, x - 1, y, check);
+}
+
+void	check_with_dfs_if_map_is_closed(t_data *data)
+{
+	int		check;
+	size_t	dfs_x;
+	size_t	dfs_y;
+
+	check = 0;
+	dfs_x = data->player.x + 1;
+	dfs_y = data->player.y + 1;
+	dfs(data->dfs_map, dfs_x, dfs_y, &check);
+	if (check == 1)
+		display_map_error(NOT_ENCLOSED, data);
+}
+
 void	check_error_on_map(t_data *data)
 {
 	int	error;
@@ -262,19 +358,20 @@ void	check_error_on_map(t_data *data)
 	else
 		error = check_rectangular_and_invalid_char(data);
 	// --------------- check map enclosed with dfs ------------- //
+	check_with_dfs_if_map_is_closed(data);
 	if (error != -1)
 		display_map_error(error, data);
 }
 
 void load_image_from_xpm_file(t_data *data, t_img *img)
 {
-	img->img = mlx_xpm_file_to_image(data->mlx, img->path, &img->width, &img->height);
-	if (img->img == NULL)
+	img->img_ptr = mlx_xpm_file_to_image(data->mlx, img->path, &img->width, &img->height);
+	if (img->img_ptr == NULL)
 	{
 		printf("%s\n", strerror(errno)); // ------ delete ------ //
 		display_map_error(MLX_ERROR, data);
 	}
-	img->addr = (unsigned int *)mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length, &img->endian);
+	img->addr = (unsigned int *)mlx_get_data_addr(img->img_ptr, &img->bits_per_pixel, &img->line_length, &img->endian);
 }
 
 void	initialize_mlx(t_data *data)
@@ -315,6 +412,7 @@ void move(t_move move, int dx, int dy, t_data *data)
 		draw_tile(&data->exit, data->player.x, data->player.y, data);
 	else
 		draw_tile(&data->floor, data->player.x, data->player.y, data);
+	data->steps++;
 	data->player.x += dx;
 	data->player.y += dy;
 }
@@ -378,7 +476,7 @@ int	game_loop(t_data *data)
 				printf("\x1b[31myou haven't got all the collectibles!\x1b[39m\n");
 		}
 	}
-	data->pressed_flag = 0;
+	data->pressed_flag = false;
 	return (0);
 }
 
@@ -456,6 +554,52 @@ void draw_map_on_window(t_data *data)
 	}
 }
 
+void	count_number_of_digits(int *digits, size_t n)
+{
+	n /= 10;
+	while (n > 0)
+	{
+		n /= 10;
+		*digits += 1;
+	}
+}
+
+char *ft_itoa_size_t(size_t n)
+{
+	size_t	i;
+	int		digits;
+	char	*converted;
+	
+	i = 0;
+	digits = 1;
+	converted = NULL;
+	count_number_of_digits(&digits, n);
+	converted = (char *)malloc(sizeof(char) * (digits + 1));
+	if (converted == NULL)
+		return (NULL);
+	converted[0] = '0';
+	while (n > 0)
+	{
+		converted[digits- i - 1] = (n % 10) + '0';
+		n /= 10;
+		i++;
+	}
+	converted[digits] = '\0';
+	return (converted);
+}
+
+void	display_number_of_steps(t_data *data)
+{
+	char *steps;
+
+	steps = ft_itoa_size_t(data->steps);
+	if (steps == NULL)
+		return ;
+	mlx_string_put(data->mlx, data->mlx_win, data->tilesize, data->tilesize, 255, "steps: ");
+	mlx_string_put(data->mlx, data->mlx_win, data->tilesize * 3, data->tilesize, 255, steps);
+	free(steps);
+}
+
 int	main(int argc, char **argv)
 {
 	t_data	data;
@@ -465,19 +609,26 @@ int	main(int argc, char **argv)
 	initialize_data(&data, argv[1]);
 	parse_map_from_file(&data);
 	save_map_with_gnl(&data);
+	initialize_dfs_map(&data);
 	check_error_on_map(&data);
 	initialize_mlx(&data);
 	create_new_window(&data);
 	draw_map_on_window(&data);
+	display_number_of_steps(&data);
 	// ------- delete below ------- //
 	printf("y: %ld\n", data.y);
 	printf("x: %ld\n", data.x);
 	printf("collectibles: %ld\n", data.collectibles);
 	printf("exits: %ld\n", data.exits);
 	printf("start_position: %ld\n", data.start_position);
-	int i = 0;
+	printf("map: \n");
+	size_t i = 0;
 	while (data.map[i] != NULL)
 		printf("%s\n", data.map[i++]);
+	printf("dfsmap: \n");
+	i = 0;
+	while (data.dfs_map[i] != NULL)
+		printf("%s\n", data.dfs_map[i++]);
 	// ---------- end --------- //
 	mlx_hook(data.mlx_win, 2, (1L << 0), &pressed_key, &data);
 	mlx_hook(data.mlx_win, 33, (1L << 17), &close_window, &data);

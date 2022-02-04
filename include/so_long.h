@@ -62,7 +62,7 @@ typedef enum e_errors
 
 typedef struct s_img
 {
-	void			*img;
+	void			*img_ptr;
 	char			*path;
 	unsigned int	*addr;
 	int				bits_per_pixel;
@@ -89,6 +89,7 @@ typedef struct s_data
 	void			*mlx;
 	void			*mlx_win;
 	char			**map;
+	char			**dfs_map;
 	coord			x;
 	coord			y;
 	t_bool			pressed_flag;
