@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 22:34:59 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/01/31 20:55:58 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/08 09:55:52 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <mlx.h>
 # include <libft.h>
 # include <get_next_line.h>
+# include <structures.h>
 
 # define BUFFER_SIZE 256
 # define KEY_ESC 65307
@@ -31,78 +32,58 @@
 # define KEY_S 115
 # define KEY_D 100
 
-typedef size_t coord;
+// dfs.c
+char	*ft_strjoinjoin(char const *s1, char const *s2, char const *s3);
+void	*ft_memset_with_malloc(int c, size_t n);
+void	initialize_dfs_map(t_data *data);
+void	dfs(char **dfs_map, size_t x, size_t y, int *check);
+void	check_with_dfs_if_map_is_closed(t_data *data);
 
-typedef enum e_bool { false, true } t_bool;
+// draw.c
+void composite_and_enlarge_img(t_data *data);
+void	count_number_of_digits(int *digits, size_t n);
+char	*ft_itoa_size_t(size_t n);
+void	display_number_of_steps(t_data *data);
+void	draw_tile(t_img *img, size_t x, size_t y, t_data *data);
+void	draw_map_on_window(t_data *data);
 
-typedef enum e_move
-{
-	UP,
-	LEFT,
-	DOWN,
-	RIGHT,
-}			t_move;
+// error.c
+void	display_error(t_data *data);
+void	display_map_error(const t_errors error, t_data *data);
+int		check_rectangular_and_invalid_char(t_data *data);
+t_bool	is_file_extension_incorrect(t_data *data);
+void	check_error_on_map(t_data *data);
 
-typedef enum e_errors
-{
-	INCORRECT_ARG,
-	INCORRECT_EXT,
-	NOT_RECTANGULAR,
-	NOT_ENCLOSED,
-	NO_EXIT,
-	NO_START_POSITION,
-	NO_COLLECTIBLES,
-	MULTIPLE_START_POSITION,
-	INVALID_CHARACTER,
-	MALLOC_ERROR,
-	MLX_ERROR,
-	UNKNOWN_ERROR,
-	INVALID,
-}			t_errors;
+// free.c
+void	destroy_and_free_img(t_data *data, t_img *img);
+void	free_all_img(t_data *data);
+void	exit_game(t_data *data, int ret);
 
-typedef struct s_img
-{
-	void			*img_ptr;
-	char			*path;
-	unsigned int	*addr;
-	int				bits_per_pixel;
-	int				line_length;
-	int				endian;
-	int				width;
-	int				height;
-}				t_img;
+// image.c
+double	ft_floor(double x);
+void	enlarge_img(t_img *img, size_t tilesize, t_data *data);
+void	composite_img(t_img *img, t_img *bg);
+void	load_image_from_xpm_file(t_data *data, t_img *img);
+t_img	initialize_img(t_data *data, char *img_name);
 
-typedef struct	s_player
-{
-	size_t x;
-	size_t y;
-	enum e_move move;
-	struct s_img front;
-	struct s_img back;
-	struct s_img right;
-	struct s_img left;
-}				t_player;
+// init.c
+void	count_object(char *buf, t_data *data);
+void	initialize_data(t_data *data, char *filename);
 
-typedef struct s_data
-{
-	char			*filename;
-	void			*mlx;
-	void			*mlx_win;
-	char			**map;
-	char			**dfs_map;
-	coord			x;
-	coord			y;
-	t_bool			pressed_flag;
-	size_t			tilesize;
-	size_t			steps;
-	size_t			collectibles;
-	size_t			exits;
-	size_t			start_position;
-	struct s_player	player;
-	struct s_img	floor;
-	struct s_img	wall;
-	struct s_img	exit;
-	struct s_img	item;
-}				t_data;
+// map.c
+void	change_player_img_match_direction(t_player *player, t_data *data);
+t_bool	is_new_position_off_map_or_wall(int dx, int dy, t_data *data);
+void	save_map_with_gnl(t_data *data);
+void	parse_map_from_file(t_data *data);
+
+// mlx.c
+int		close_window(t_data *data);
+int		game_loop(t_data *data);
+void	create_new_window(t_data *data);
+void	initialize_mlx(t_data *data);
+
+// move.c
+void	move(t_move move, int dx, int dy, t_data *data);
+int		pressed_key(int key_code, t_data *data);
 
 #endif
