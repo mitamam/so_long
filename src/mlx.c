@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:58:43 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/08 13:38:09 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 14:17:30 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,7 @@ int	game_loop(t_data *data)
 		if (data->map[data->player.y][data->player.x] == 'C')
 		{
 			data->collectibles--;
-			// ------- delete ------- //
 			printf("collectibles: %ld\n", data->collectibles);
-			// -------- end ------- //
 			data->map[data->player.y][data->player.x] = '0';
 		}
 		else if (data->map[data->player.y][data->player.x] == 'E')

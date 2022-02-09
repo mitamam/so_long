@@ -1,7 +1,8 @@
 {
 	"files.associations": {
 		"mlx.h": "c",
+		"fcntl.h": "c",
 		"stdlib.h": "c",
-		"so_long.h": "c"
+		"stdio.h": "c"
 	}
 }

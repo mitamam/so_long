@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:57:37 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/08 13:05:47 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 05:48:41 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void	exit_game(t_data *data, int ret)
 {
 	size_t	i;
 
-	
 	if (data->dfs_map != NULL)
 	{
 		i = 0;

@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:45:36 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/06 09:12:59 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 05:50:11 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,10 @@ void	initialize_data(t_data *data, char *filename)
 	data->mlx = NULL;
 	data->mlx_win = NULL;
 	data->map = NULL;
+	data->dfs_map = NULL;
 	data->x = 0;
 	data->y = 1;
+	data->pressed_flag = 0;
 	data->string_y = 0;
 	data->tilesize = 0;
 	data->steps = 0;

@@ -6,11 +6,18 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 22:23:46 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/08 09:55:30 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 14:06:15 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include <so_long.h>
+
+int	expose_window(t_data *data)
+{
+	draw_map_on_window(data);
+	display_number_of_steps(data);
+	return (0);
+}
 
 int	main(int argc, char **argv)
 {
@@ -24,29 +31,10 @@ int	main(int argc, char **argv)
 	check_error_on_map(&data);
 	initialize_mlx(&data);
 	create_new_window(&data);
-	draw_map_on_window(&data);
-	display_number_of_steps(&data);
-	// ------- delete below ------- //
-	printf("floor size_line: %d\n", data.floor.line_length);
-	printf("player front size_line: %d\n", data.player.front.line_length);
-	printf("item size_line: %d\n", data.item.line_length);
-	printf("exit size_line: %d\n", data.exit.line_length);
-	printf("y: %ld\n", data.y);
-	printf("x: %ld\n", data.x);
-	printf("collectibles: %ld\n", data.collectibles);
-	printf("exits: %ld\n", data.exits);
-	printf("start_position: %ld\n", data.start_position);
-	printf("map: \n");
-	size_t i = 0;
-	while (data.map[i] != NULL)
-		printf("%s\n", data.map[i++]);
-	printf("dfsmap: \n");
-	i = 0;
-	while (data.dfs_map[i] != NULL)
-		printf("%s\n", data.dfs_map[i++]);
-	// ---------- end --------- //
-	mlx_hook(data.mlx_win, 2, (1L << 0), &pressed_key, &data);
-	mlx_hook(data.mlx_win, 33, (1L << 17), &close_window, &data);
+	composite_and_enlarge_img(&data);
+	mlx_hook(data.mlx_win, X_EVENT_KEY_PRESS, (1L<<0), &pressed_key, &data);
+	mlx_hook(data.mlx_win, X_EVENT_EXPOSE, (1L<<15), &expose_window, &data);
+	mlx_hook(data.mlx_win, X_EVENT_RED_CROSS, (1L<<17), &close_window, &data);
 	mlx_loop_hook(data.mlx, &game_loop, &data);
 	mlx_loop(data.mlx);
 	exit_game(&data, 0);

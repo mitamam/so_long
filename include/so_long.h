@@ -6,25 +6,28 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 22:34:59 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/08 09:55:52 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 09:49:36 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
-# include <stdio.h> // prinf
-# include <unistd.h> // read
-# include <stdlib.h> // exit, malloc
-# include <string.h> // strerror
-# include <errno.h> // errno
-# include <fcntl.h> // open
-
+# include <stdio.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <string.h>
+# include <errno.h>
+# include <fcntl.h>
+#include <X11/Xlib.h>
 # include <mlx.h>
 # include <libft.h>
 # include <get_next_line.h>
 # include <structures.h>
 
+# define X_EVENT_KEY_PRESS 2
+# define X_EVENT_EXPOSE 12
+# define X_EVENT_RED_CROSS 17
 # define BUFFER_SIZE 256
 # define KEY_ESC 65307
 # define KEY_W 119

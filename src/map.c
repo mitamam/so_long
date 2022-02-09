@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:51:14 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/07 09:24:55 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 05:19:14 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,14 @@ void	parse_map_from_file(t_data *data)
 	while (ret > 0)
 	{
 		ret = read(fd, buf, BUFFER_SIZE);
+		if (ret == -1)
+		{
+			free(buf);
+			display_error(data);
+		}
 		buf[ret] = '\0';
 		count_object(buf, data);
 	}
-	if (ret == -1)
-		display_error(data);
 	free(buf);
 	close(fd);
 }

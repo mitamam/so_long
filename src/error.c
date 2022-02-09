@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:44:02 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/04 08:01:24 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 05:58:54 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	display_error(t_data *data)
 {
+	printf("Error/n");
 	printf("./so_long: %s: %s\n", data->filename, strerror(errno));
 	exit_game(data, 1);
 }
@@ -35,8 +36,11 @@ void	display_map_error(const t_errors error, t_data *data)
 		"an unknown error has occurred",
 	};
 	printf("Error\n");
-	if (error == INCORRECT_ARG || error >= MALLOC_ERROR)
+	if (error == INCORRECT_ARG)
+	{
 		printf("%s\n", error_msgs[error]);
+		exit(1);
+	}
 	else
 		printf("%s: %s\n", data->filename, error_msgs[error]);
 	exit_game(data, 1);
@@ -75,7 +79,10 @@ int	check_rectangular_and_invalid_char(t_data *data)
 
 t_bool	is_file_extension_incorrect(t_data *data)
 {
-	if (ft_strncmp(ft_strrchr(data->filename, '.'), ".ber", 4) != 0)
+	char *ext;
+
+	ext = ft_strrchr(data->filename, '.');
+	if (ext == NULL || ft_strncmp(ext, ".ber", 4) != 0)
 		return (true);
 	return (false);
 }

@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 06:00:23 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/08 13:38:43 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/09 14:15:12 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,14 +107,13 @@ void draw_map_on_window(t_data *data)
 	size_t	i;
 	size_t	j;
 
-	composite_and_enlarge_img(data);
 	i = 0;
 	while (i < data->y)
 	{
 		j = 0;
 		while (j < data->x)
 		{
-			if (data->map[i][j] == '0')
+			if (data->map[i][j] == '0' || data->map[i][j] == 'P')
 				draw_tile(&data->floor, j, i, data);
 			else if (data->map[i][j] == '1')
 				draw_tile(&data->wall, j, i, data);
@@ -122,8 +121,8 @@ void draw_map_on_window(t_data *data)
 				draw_tile(&data->exit, j, i, data);
 			else if (data->map[i][j] == 'C')
 				draw_tile(&data->item, j, i, data);
-			else if (data->map[i][j] == 'P')
-				draw_tile(&data->player.front, j, i, data);
+			if (data->player.x == j && data->player.y == i)
+				change_player_img_match_direction(&data->player, data);
 			j++;
 		}
 		i++;
