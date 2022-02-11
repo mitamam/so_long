@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:45:36 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/09 05:50:11 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/10 07:34:46 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,17 @@ void	count_object(char *buf, t_data *data)
 	}
 }
 
+void	initialize_player(t_player *player, t_data *data)
+{
+	player->front = initialize_img(data, "front.xpm");
+	player->back = initialize_img(data, "back.xpm");
+	player->right = initialize_img(data, "right.xpm");
+	player->left = initialize_img(data, "left.xpm");
+	player->x = 0;
+	player->y = 0;
+	player->move = DOWN;
+}
+
 void	initialize_data(t_data *data, char *filename)
 {
 	data->filename = filename;
@@ -48,15 +59,9 @@ void	initialize_data(t_data *data, char *filename)
 	data->collectibles = 0;
 	data->exits = 0;
 	data->start_position = 0;
-	data->player.front = initialize_img(data, "front.xpm");
-	data->player.back = initialize_img(data, "back.xpm");
-	data->player.right = initialize_img(data, "right.xpm");
-	data->player.left = initialize_img(data, "left.xpm");
-	data->player.x = 0;
-	data->player.y = 0;
-	data->player.move = DOWN;
 	data->floor = initialize_img(data, "floor.xpm");
 	data->wall = initialize_img(data, "wall.xpm");
 	data->exit = initialize_img(data, "exit.xpm");
 	data->item = initialize_img(data, "item.xpm");
+	initialize_player(&data->player, data);
 }

@@ -6,15 +6,15 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 07:10:28 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/07 05:54:41 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/10 06:38:11 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCTURES_H
 # define STRUCTURES_H
 
-typedef size_t coord;
-typedef enum e_bool { false, true } t_bool;
+typedef size_t	t_coord;
+typedef enum e_bool { false, true }	t_bool;
 
 typedef enum e_move
 {
@@ -53,15 +53,15 @@ typedef struct s_img
 	int				height;
 }				t_img;
 
-typedef struct	s_player
+typedef struct s_player
 {
-	size_t x;
-	size_t y;
-	enum e_move move;
-	struct s_img front;
-	struct s_img back;
-	struct s_img right;
-	struct s_img left;
+	size_t			x;
+	size_t			y;
+	enum e_move		move;
+	struct s_img	front;
+	struct s_img	back;
+	struct s_img	right;
+	struct s_img	left;
 }				t_player;
 
 typedef struct s_data
@@ -71,11 +71,13 @@ typedef struct s_data
 	void			*mlx_win;
 	char			**map;
 	char			**dfs_map;
-	coord			x;
-	coord			y;
+	t_coord			x;
+	t_coord			y;
 	t_bool			pressed_flag;
 	size_t			string_y;
 	size_t			tilesize;
+	int				fx;
+	int				fy;
 	size_t			steps;
 	int				steps_digits;
 	size_t			collectibles;

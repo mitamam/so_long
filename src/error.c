@@ -6,7 +6,7 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:44:02 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/09 05:58:54 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/10 06:37:08 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	display_map_error(const t_errors error, t_data *data)
 		"an error occurred in MiniLibX",
 		"an unknown error has occurred",
 	};
+
 	printf("Error\n");
 	if (error == INCORRECT_ARG)
 	{
@@ -46,40 +47,36 @@ void	display_map_error(const t_errors error, t_data *data)
 	exit_game(data, 1);
 }
 
-int	check_rectangular_and_invalid_char(t_data *data)
+int	check_rectangular_and_invalid_char(t_coord *x, t_coord *y, t_data *data)
 {
-	coord	x;
-	coord	y;
-
-	y = 0;
-	while (data->map[y] != NULL)
+	while (data->map[*y] != NULL)
 	{
-		x = 0;
-		while (data->map[y][x] != '\0')
+		*x = 0;
+		while (data->map[*y][*x] != '\0')
 		{
-			if (data->map[y][x] == 'P')
+			if (data->map[*y][*x] == 'P')
 			{
-				data->player.x = x;
-				data->player.y = y;
+				data->player.x = *x;
+				data->player.y = *y;
 			}
-			if (data->map[y][x] != '0' && data->map[y][x] != '1' &&
-			 data->map[y][x] != 'C' && data->map[y][x] != 'E' &&
-			 data->map[y][x] != 'P')
+			if (data->map[*y][*x] != '0' && data->map[*y][*x] != '1' &&
+				data->map[*y][*x] != 'C' && data->map[*y][*x] != 'E' &&
+				data->map[*y][*x] != 'P')
 				return (INVALID_CHARACTER);
-			x++;
+			*x += 1;
 		}
-		if (y == 0)
-			data->x = x;
-		else if (data->x != x)
+		if (*y == 0)
+			data->x = *x;
+		else if (data->x != *x)
 			return (NOT_RECTANGULAR);
-		y++;
+		*y += 1;
 	}
 	return (-1);
 }
 
 t_bool	is_file_extension_incorrect(t_data *data)
 {
-	char *ext;
+	char	*ext;
 
 	ext = ft_strrchr(data->filename, '.');
 	if (ext == NULL || ft_strncmp(ext, ".ber", 4) != 0)
@@ -89,9 +86,13 @@ t_bool	is_file_extension_incorrect(t_data *data)
 
 void	check_error_on_map(t_data *data)
 {
-	int	error;
+	int		error;
+	t_coord	x;
+	t_coord	y;
 
 	error = -1;
+	x = 0;
+	y = 0;
 	if (is_file_extension_incorrect(data))
 		error = INCORRECT_EXT;
 	else if (data->collectibles == 0)
@@ -103,7 +104,7 @@ void	check_error_on_map(t_data *data)
 	else if (data->start_position > 1)
 		error = MULTIPLE_START_POSITION;
 	else
-		error = check_rectangular_and_invalid_char(data);
+		error = check_rectangular_and_invalid_char(&x, &y, data);
 	if (error != -1)
 		display_map_error(error, data);
 	initialize_dfs_map(data);

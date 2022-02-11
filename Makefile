@@ -6,18 +6,17 @@
 #    By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/10 20:17:33 by mmasuda           #+#    #+#              #
-#    Updated: 2022/02/09 15:38:46 by mmasuda          ###   ########.fr        #
+#    Updated: 2022/02/10 08:20:28 by mmasuda          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := so_long
 
-SRC_FILE := main.c dfs.c draw.c error.c \
-			free.c image.c init.c map.c mlx.c move.c
+SRC_FILE := main.c dfs.c draw.c error.c free.c image.c \
+				init.c map.c mlx.c move.c hook.c utils.c
 SRC_DIR := src/
 SRC = $(addprefix $(SRC_DIR), $(SRC_FILE))
 INC := include/
-CC := gcc
 CFLAGS := -Wall -Wextra -Werror
 MLX_DIR := mlx_Linux
 LIB := -L$(MLX_DIR) -lmlx -I$(MLX_DIR) -L/usr/lib -lXext -lX11 -lm -lz 

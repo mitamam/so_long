@@ -6,19 +6,19 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 05:57:37 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/09 05:48:41 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/10 06:00:07 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <so_long.h>
 
-void destroy_and_free_img(t_data *data, t_img *img)
+void	destroy_and_free_img(t_data *data, t_img *img)
 {
 	if (img->img_ptr != NULL)
 		mlx_destroy_image(data->mlx, img->img_ptr);
 }
 
-void free_all_img(t_data *data)
+void	free_all_img(t_data *data)
 {
 	destroy_and_free_img(data, &data->floor);
 	destroy_and_free_img(data, &data->wall);
