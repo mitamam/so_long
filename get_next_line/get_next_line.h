@@ -6,14 +6,13 @@
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/23 17:42:27 by mmasuda           #+#    #+#             */
-/*   Updated: 2021/11/11 12:06:04 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/12 03:30:44 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# include <so_long.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>

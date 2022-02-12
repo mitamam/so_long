@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   so_long.h                                          :+:      :+:    :+:   */
+/*   so_long_bonus.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mmasuda <mmasuda@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 22:34:59 by mmasuda           #+#    #+#             */
-/*   Updated: 2022/02/12 03:32:00 by mmasuda          ###   ########.fr       */
+/*   Updated: 2022/02/12 03:32:09 by mmasuda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SO_LONG_H
-# define SO_LONG_H
+#ifndef SO_LONG_BONUS_H
+# define SO_LONG_BONUS_H
 
 # include <stdio.h>
 # include <unistd.h>
@@ -23,7 +23,7 @@
 # include <mlx.h>
 # include <libft.h>
 # include <get_next_line.h>
-# include <structures.h>
+# include <structures_bonus.h>
 
 # define X_EVENT_KEY_PRESS 2
 # define X_EVENT_EXPOSE 12

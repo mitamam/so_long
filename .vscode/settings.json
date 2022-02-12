@@ -3,6 +3,7 @@
 		"mlx.h": "c",
 		"fcntl.h": "c",
 		"stdlib.h": "c",
-		"stdio.h": "c"
+		"stdio.h": "c",
+		"so_long_bonus.h": "c"
 	}
 }
